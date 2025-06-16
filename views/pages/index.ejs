@@ -1,6 +1,20 @@
-<h1>Lista de usuarios</h1>
-<ul>
-    <% usuarios.forEach(u => { %>
-        <li><%= u.nombre %></li>
-    <% }); %>
-</ul>
+<section class="section">
+    <div class="container">
+        <h1 class="title">Lista de usuarios</h1>
+
+        <div class="columns is-multiline">
+            <% usuarios.forEach(u => { %>
+                <div class="column is-one-quarter">
+                    <div class="box">
+                        <p class="subtitle">
+                            <strong>
+                                <%= u.nombre %>
+                            </strong>
+                        </p>
+                        <button class="button is-link is-fullwidth">Ver perfil</button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</section>

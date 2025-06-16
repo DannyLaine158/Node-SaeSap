@@ -7,7 +7,7 @@ const PORT = 3000;
 const path = require('path');
 
 // Middleware: Configuración previa para que funcione el servidor
-// app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware: Configuración de EJS
 app.set('view engine', 'ejs');
