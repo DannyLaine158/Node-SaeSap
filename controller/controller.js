@@ -2,6 +2,7 @@ const User = require('../model/user');
 const path = require('path');
 const fs = require('fs');
 const ejs = require('ejs');
+const nodemailer = require('nodemailer');
 const controller = {};
 
 controller.mostrarInicio = async (req, res) => {
@@ -24,6 +25,50 @@ controller.mostarContacto = (req, res) => {
     const pagina = fs.readFileSync(path.join(__dirname, '../views/pages/contacto.ejs'), 'utf8');
     res.render('layouts/layout', { 
         'titulo': 'Contacto',
+        body: pagina
+    });
+}
+
+// Async: Función asíncrona o en paralelo
+controller.enviarContacto = async (req, res) => {
+    const { name, email, message } = req.body;
+
+    // Construir el Transportador
+    // Looking to send emails in production? Check out our Email API/SMTP product!
+    var transport = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: `${name} - ${email}`,
+        to: "daniel@mail.com",
+        subject: "Nuevo mensaje de contacto",
+        text: `
+            Has recibido un nuevo mensaje:
+            Nombre: ${name}
+            Email: ${email}
+            Mensaje: ${message}
+        `
+    };
+
+    try {
+        await transport.sendMail(mailOptions);
+        res.redirect('/contacto/enviado');
+    } catch (error) {
+        console.log("Error al enviar email");
+        res.status(500).send("Error al enviar mensaje");
+    }
+}
+
+controller.contactoEnviado = (req, res) => {
+    const pagina = fs.readFileSync(path.join(__dirname, '../views/pages/contacto_exitoso.ejs'), 'utf8');
+    res.render('layouts/layout', { 
+        'titulo': 'Mensaje Enviado',
         body: pagina
     });
 }

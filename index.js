@@ -6,8 +6,14 @@ const app = express();
 const PORT = 3000;
 const path = require('path');
 
+// Configuración para cargar las variables de entorno
+require('dotenv').config();
+
 // Middleware: Configuración previa para que funcione el servidor
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ // Para leer los datos del formulario
+    extended: true
+}));
 
 // Middleware: Configuración de EJS
 app.set('view engine', 'ejs');
