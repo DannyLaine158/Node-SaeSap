@@ -73,4 +73,31 @@ controller.contactoEnviado = (req, res) => {
     });
 }
 
+controller.verPerfil = async (req, res) => {
+    // Obtener un parámetro desde la URL
+    const id = req.params.id;
+    const usuario = User.obtenerUsuarioPorId(id);
+    // console.log(usuario);
+
+    if (!usuario)
+        return res.redirect('/error');
+
+    const pagina = await ejs.renderFile("views/pages/perfil.ejs", { 
+        usuario
+    });
+
+    res.render('layouts/layout', { 
+        'titulo': 'Perfil de ' + usuario.nombre,
+        body: pagina
+    });
+}
+
+controller.error_404 = (req, res) => {
+    const pagina = fs.readFileSync(path.join(__dirname, '../views/pages/error_404.ejs'), 'utf8');
+    res.render('layouts/layout', { 
+        'titulo': 'Error 404',
+        body: pagina
+    });
+}
+
 module.exports = controller;
