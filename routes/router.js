@@ -6,5 +6,7 @@ router.get('/', controller.mostrarInicio);
 router.get('/contacto', controller.mostarContacto);
 router.post('/contacto', controller.enviarContacto);
 router.get('/contacto/enviado', controller.contactoEnviado);
+router.get('/usuarios/:id', controller.verPerfil);
+router.get('/error', controller.error_404);
 
 module.exports = router;
