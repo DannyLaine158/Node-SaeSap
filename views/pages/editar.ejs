@@ -1,0 +1,20 @@
+<div class="container">
+    <h2 class="title">Editar perfil de <%= usuario.nombre %></h2>
+    <form action="/usuarios/<%= usuario.id %>/editar" method="post">
+        <div class="field">
+            <label for="name" class="label">Nombre</label>
+            <input type="text" class="input" id="name" name="name" 
+                value="<%= usuario.nombre %>">
+        </div>
+
+        <div class="field">
+            <label for="email" class="label">Correo</label>
+            <input type="email" class="input" id="email" name="email" 
+                value="<%= usuario.correo %>">
+        </div>
+
+        <button class="button is-primary" type="submit">
+            Guardar cambios
+        </button>
+    </form>
+</div>

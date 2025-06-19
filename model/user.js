@@ -1,12 +1,16 @@
-let usuarios = [
-    { id: 1, nombre: "Daniel", correo: 'daniel@mail.com' },
-    { id: 2, nombre: "Luis", correo: 'luis@mail.com' },
-    { id: 3, nombre: "Juan", correo: 'juan@mail.com' },
-    { id: 4, nombre: "Brian", correo: 'brian@mail.com' }
-];
+const fs = require('fs');
+const path = require('path');
+const route = path.join(__dirname, '../database/users.json');
 
 function obtenerUsuarios() {
-    return usuarios;
+    const usuarios = fs.readFileSync(route, 'utf8');
+    return JSON.parse(usuarios);
+}
+
+function obtenerUsuarioPorId(id) {
+    // La lista completa de los usuarios
+    const usuarios = obtenerUsuarios();
+    return usuarios.find(u => u.id === parseInt(id));
 }
 
 function obtenerUsuarioPorId(id) {

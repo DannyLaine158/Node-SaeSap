@@ -100,4 +100,42 @@ controller.error_404 = (req, res) => {
     });
 }
 
+controller.editarUsuario = async (req, res) => {
+    const id = req.params.id;
+    const usuario = User.obtenerUsuarioPorId(id);
+
+    if (!usuario)
+        return res.redirect('/error');
+
+    const pagina = await ejs.renderFile("views/pages/editar.ejs", { 
+        usuario
+    });
+
+    res.render('layouts/layout', { 
+        'titulo': 'Editar ' + usuario.nombre,
+        body: pagina
+    });
+}
+
+controller.actualizarUsuario = (req, res) => {
+    const id = req.params.id;
+    const usuarios = User.obtenerUsuarios();
+
+    // Obtenemos al indice del usuario que estamos buscando
+    const index = usuarios.findIndex(u => u.id === parseInt(id));
+
+    if (index === -1) return res.status(404).send("Usario no encontrado");
+
+    let usuario = usuarios[index];
+    const { name, email } = req.body;
+
+    // Agregamos los datos al usuario
+    usuarios[index] = { ...usuario, "nombre": name, "correo": email };
+
+    fs.writeFileSync(path.join(__dirname, '../database/users.json'), 
+        JSON.stringify(usuarios, null, 2));
+
+    res.redirect(`/usuarios/${id}`);
+}
+
 module.exports = controller;
