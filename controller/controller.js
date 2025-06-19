@@ -128,14 +128,21 @@ controller.actualizarUsuario = (req, res) => {
 
     let usuario = usuarios[index];
     const { name, email } = req.body;
+    const foto = req.file ? `/images/${req.file.filename}` : usuario.foto;
+
+    // console.log(foto);
 
     // Agregamos los datos al usuario
-    usuarios[index] = { ...usuario, "nombre": name, "correo": email };
+    usuarios[index] = { ...usuario, 
+        "nombre": name, 
+        "correo": email,
+        "foto": foto
+    };
 
     fs.writeFileSync(path.join(__dirname, '../database/users.json'), 
         JSON.stringify(usuarios, null, 2));
 
-    res.redirect(`/usuarios/${id}`);
+    res.redirect(`/usuarios/${id}?updated=true`);
 }
 
 module.exports = controller;

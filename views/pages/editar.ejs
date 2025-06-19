@@ -1,6 +1,7 @@
 <div class="container">
     <h2 class="title">Editar perfil de <%= usuario.nombre %></h2>
-    <form action="/usuarios/<%= usuario.id %>/editar" method="post">
+    <form action="/usuarios/<%= usuario.id %>/editar" 
+        method="post" enctype="multipart/form-data" class="box">
         <div class="field">
             <label for="name" class="label">Nombre</label>
             <input type="text" class="input" id="name" name="name" 
@@ -11,6 +12,18 @@
             <label for="email" class="label">Correo</label>
             <input type="email" class="input" id="email" name="email" 
                 value="<%= usuario.correo %>">
+        </div>
+
+        <div class="field">
+            <label for="picture">Foto actual</label>
+            <img style="max-width: 100px; border-radius: 50%;"
+                src="<%= usuario.foto %>" 
+                alt="Foto actual">
+        </div>
+
+        <div class="field">
+            <label for="edit_picture">Nueva Foto</label>
+            <input type="file" class="input" name="foto">
         </div>
 
         <button class="button is-primary" type="submit">
