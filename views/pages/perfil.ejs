@@ -10,4 +10,14 @@
     <a href="/usuarios/<%= usuario.id %>/editar"
         class="button is-warning is-small ml-2 mt-2"
         >Editar</a>
+
+    <form style="display: inline;" 
+        action="/usuarios/<%= usuario.id %>/eliminar" 
+        method="post">
+        <button type="submit" 
+            onclick="return confirm('¿Estás seguro de eliminar?')"
+            class="button is-danger is-small ml-2 mt-2">
+            Eliminar
+        </button>
+    </form>
 </div>

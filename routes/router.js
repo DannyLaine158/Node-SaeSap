@@ -10,6 +10,7 @@ router.get('/contacto/enviado', controller.contactoEnviado);
 router.get('/usuarios/:id', controller.verPerfil);
 router.get('/error', controller.error_404);
 router.get('/usuarios/:id/editar', controller.editarUsuario);
+router.post('/usuarios/:id/eliminar', controller.eliminarUsuario);
 
 router.post('/usuarios/:id/editar', (req, res, next) => {
     upload.single('foto')(req, res, function (err) {

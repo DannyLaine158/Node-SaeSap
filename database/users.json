@@ -10,17 +10,5 @@
     "nombre": "Luis789",
     "correo": "luis@mail.com",
     "foto": "/images/foto2.jpg"
-  },
-  {
-    "id": 3,
-    "nombre": "Juan",
-    "correo": "juan@mail.com",
-    "foto": "/images/foto3.jpg"
-  },
-  {
-    "id": 4,
-    "nombre": "Brian",
-    "correo": "brian@mail.com",
-    "foto": "/images/foto4.jpg"
   }
 ]

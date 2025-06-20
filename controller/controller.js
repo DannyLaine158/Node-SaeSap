@@ -145,4 +145,22 @@ controller.actualizarUsuario = (req, res) => {
     res.redirect(`/usuarios/${id}?updated=true`);
 }
 
+controller.eliminarUsuario = (req, res) => {
+    // console.log("Hola");
+    const eliminado = User.eliminarUsuario(req.params.id);
+
+    if (!eliminado) {
+        return res.status(404).render('layouts/layout', {
+            titulo: "Usuario no encontrado",
+            body: `
+                <div class='notification is-danger is-light'>
+                    No se encontró dicho usuario
+                </div>
+            `
+        });
+    }
+
+    res.redirect('/?updated=true');
+}
+
 module.exports = controller;

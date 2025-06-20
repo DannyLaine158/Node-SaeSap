@@ -13,13 +13,27 @@ function obtenerUsuarioPorId(id) {
     return usuarios.find(u => u.id === parseInt(id));
 }
 
-function obtenerUsuarioPorId(id) {
-    // La lista completa de los usuarios
+function eliminarUsuario(id) {
     const usuarios = obtenerUsuarios();
-    return usuarios.find(u => u.id === parseInt(id));
+    const usuario = usuarios.find(u => u.id === parseInt(id));
+    if (!usuario) return false;
+
+    if (usuario.foto && usuario.foto.startsWith('/images/')) {
+        // Obtener la ruta de la foto
+        const fotoPath = path.join(__dirname, '../public', usuario.foto);
+        if (fs.existsSync(fotoPath)) {
+            fs.unlinkSync(fotoPath);
+        }
+    }
+
+    // Obteniendo los usuarios menos el que pasamos por ID en el parámetro
+    const nuevosUsuarios = usuarios.filter(u => u.id !== parseInt(id));
+    fs.writeFileSync(route, JSON.stringify(nuevosUsuarios, null, 2));
+    return true;
 }
 
 module.exports = {
     obtenerUsuarios,
-    obtenerUsuarioPorId
+    obtenerUsuarioPorId,
+    eliminarUsuario
 };
