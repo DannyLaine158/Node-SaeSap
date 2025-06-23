@@ -10,5 +10,12 @@
     "nombre": "Luis789",
     "correo": "luis@mail.com",
     "foto": "/images/foto2.jpg"
+  },
+  {
+    "id": 3,
+    "nombre": "Pingüino",
+    "correo": "test@gmail.com",
+    "foto": "/images/1750721077185.webp",
+    "email": "test@gmail.com"
   }
 ]

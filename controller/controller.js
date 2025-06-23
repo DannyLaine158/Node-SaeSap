@@ -119,28 +119,17 @@ controller.editarUsuario = async (req, res) => {
 
 controller.actualizarUsuario = (req, res) => {
     const id = req.params.id;
-    const usuarios = User.obtenerUsuarios();
-
-    // Obtenemos al indice del usuario que estamos buscando
-    const index = usuarios.findIndex(u => u.id === parseInt(id));
-
-    if (index === -1) return res.status(404).send("Usario no encontrado");
-
-    let usuario = usuarios[index];
     const { name, email } = req.body;
+    const usuario = User.obtenerUsuarioPorId(id);
+    if (!usuario) return res.status(404).send("Usuario no encontrado");
+
     const foto = req.file ? `/images/${req.file.filename}` : usuario.foto;
 
-    // console.log(foto);
-
-    // Agregamos los datos al usuario
-    usuarios[index] = { ...usuario, 
-        "nombre": name, 
-        "correo": email,
-        "foto": foto
-    };
-
-    fs.writeFileSync(path.join(__dirname, '../database/users.json'), 
-        JSON.stringify(usuarios, null, 2));
+    User.actualizarUsuario(id, {
+        "nombre": name,
+        "email": email,
+        foto
+    });
 
     res.redirect(`/usuarios/${id}?updated=true`);
 }
@@ -161,6 +150,30 @@ controller.eliminarUsuario = (req, res) => {
     }
 
     res.redirect('/?updated=true');
+}
+
+controller.mostrarFormularioNuevo = (req, res) => {
+    const pagina = fs.readFileSync(path.join(__dirname, '../views/pages/nuevo.ejs'), 'utf8');
+    res.render('layouts/layout', {
+        titulo: 'Nuevo usuario',
+        body: pagina
+    });
+}
+
+controller.crearUsuario = (req, res) => {
+    const { nombre, correo } = req.body;
+
+    if (!nombre || !correo)
+        return res.status(400).send("Faltan campos obligatorios");
+
+    const foto = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
+    const nuevoId = User.crearUsuario({
+        nombre,
+        correo,
+        foto
+    });
+
+    res.redirect(`/usuarios/${nuevoId}?updated=true`);
 }
 
 module.exports = controller;

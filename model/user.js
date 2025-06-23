@@ -32,8 +32,33 @@ function eliminarUsuario(id) {
     return true;
 }
 
+function crearUsuario(datos) {
+    const usuarios = obtenerUsuarios();
+    const nuevoId = usuarios.length + 1;
+    const nuevoUsuario = { id: nuevoId, ...datos };
+    usuarios.push(nuevoUsuario);
+    fs.writeFileSync(route, JSON.stringify(usuarios, null, 2));
+    return nuevoId;
+}
+
+function actualizarUsuario(id, nuevosDatos) {
+    const usuarios = obtenerUsuarios();
+
+    // Obtenemos al indice del usuario que estamos buscando
+    const index = usuarios.findIndex(u => u.id === parseInt(id));
+
+    if (index === -1) {
+        return res.status(404).send("Usario no encontrado");
+    } else {
+        usuarios[index] = { ...usuarios[index], ...nuevosDatos };
+        fs.writeFileSync(route, JSON.stringify(usuarios, null, 2));
+    }
+}
+
 module.exports = {
     obtenerUsuarios,
     obtenerUsuarioPorId,
-    eliminarUsuario
+    eliminarUsuario,
+    crearUsuario,
+    actualizarUsuario
 };

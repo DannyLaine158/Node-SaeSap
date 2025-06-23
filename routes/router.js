@@ -11,6 +11,23 @@ router.get('/usuarios/:id', controller.verPerfil);
 router.get('/error', controller.error_404);
 router.get('/usuarios/:id/editar', controller.editarUsuario);
 router.post('/usuarios/:id/eliminar', controller.eliminarUsuario);
+router.get('/usuario/nuevo', controller.mostrarFormularioNuevo);
+
+router.post('/usuario/nuevo', (req, res, next) => {
+    upload.single('foto')(req, res, function (err) {
+        if (err) {
+            return res.status(400).render('layouts/layout', {
+                titulo: "Error al subir la imagen",
+                body: ` <div class='notification is-danger is-light'>
+                            <strong>Error: </strong> ${err.message}
+                            <a href='/' class='button is-link mt-3'
+                                >Volver</a>
+                        </div>`
+            });
+        }
+        next();
+    })
+}, controller.crearUsuario);
 
 router.post('/usuarios/:id/editar', (req, res, next) => {
     upload.single('foto')(req, res, function (err) {
