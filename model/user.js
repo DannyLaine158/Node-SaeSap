@@ -29,32 +29,23 @@ const User = {
         });
     },
 
-    eliminarUsuario: (id) => {
-        const usuarios = obtenerUsuarios();
-        const usuario = usuarios.find(u => u.id === parseInt(id));
-        if (!usuario) return false;
+    eliminarUsuario: (id, callback) => {
+        db.query("DELETE FROM usuarios WHERE id = ?", [id], (err) => {
+            if (err) return callback(err);
 
-        if (usuario.foto && usuario.foto.startsWith('/images/')) {
-            // Obtener la ruta de la foto
-            const fotoPath = path.join(__dirname, '../public', usuario.foto);
-            if (fs.existsSync(fotoPath)) {
-                fs.unlinkSync(fotoPath);
-            }
-        }
-
-        // Obteniendo los usuarios menos el que pasamos por ID en el parámetro
-        const nuevosUsuarios = usuarios.filter(u => u.id !== parseInt(id));
-        fs.writeFileSync(route, JSON.stringify(nuevosUsuarios, null, 2));
-        return true;
+            callback(null);
+        });
     },
 
-    crearUsuario: (datos) => {
-        const usuarios = obtenerUsuarios();
-        const nuevoId = usuarios.length + 1;
-        const nuevoUsuario = { id: nuevoId, ...datos };
-        usuarios.push(nuevoUsuario);
-        fs.writeFileSync(route, JSON.stringify(usuarios, null, 2));
-        return nuevoId;
+    crearUsuario: (datos, callback) => {
+        db.query("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)",
+            [ datos.nombre, datos.correo ],
+            (err, result) => {
+                if (err) return callback(err);
+
+                callback(null, result.insertId);
+            }
+        )
     },
 
     actualizarUsuario: (id, nuevosDatos, callback) => {

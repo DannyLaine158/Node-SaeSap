@@ -131,21 +131,12 @@ controller.actualizarUsuario = (req, res) => {
 }
 
 controller.eliminarUsuario = (req, res) => {
-    // console.log("Hola");
-    const eliminado = User.eliminarUsuario(req.params.id);
+    const id = req.params.id;
+    User.eliminarUsuario(id, (err) => {
+        if (err) return res.status(500).send("Error al eliminar usuario");
 
-    if (!eliminado) {
-        return res.status(404).render('layouts/layout', {
-            titulo: "Usuario no encontrado",
-            body: `
-                <div class='notification is-danger is-light'>
-                    No se encontró dicho usuario
-                </div>
-            `
-        });
-    }
-
-    res.redirect('/?updated=true');
+        res.redirect(`/?updated=true`);
+    });
 }
 
 controller.mostrarFormularioNuevo = (req, res) => {
@@ -162,14 +153,12 @@ controller.crearUsuario = (req, res) => {
     if (!nombre || !correo)
         return res.status(400).send("Faltan campos obligatorios");
 
-    const foto = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
-    const nuevoId = User.crearUsuario({
-        nombre,
-        correo,
-        foto
-    });
+    // const foto = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
+    User.crearUsuario({ nombre, correo }, (err, nuevoId) => {
+        if (err) return res.status(500).send("Error al crear usuario");
 
-    res.redirect(`/usuarios/${nuevoId}?updated=true`);
+        res.redirect(`/usuarios/${nuevoId}`);
+    })
 }
 
 module.exports = controller;
