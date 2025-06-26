@@ -5,17 +5,19 @@ const ejs = require('ejs');
 const nodemailer = require('nodemailer');
 const controller = {};
 
-controller.mostrarInicio = async (req, res) => {
+controller.mostrarInicio = (req, res) => {
     // const pagina = fs.readFileSync(path.join(__dirname, '../views/pages/index.ejs'), 'utf8')
-    const usuarios = User.obtenerUsuarios();
-    // res.sendFile(path.join(__dirname, '../public/html/index.html'));
-    const pagina = await ejs.renderFile("views/pages/index.ejs", { 
-        usuarios
-    });
+    User.obtenerUsuarios(async (err, usuarios) => {
+        if (err) return res.status(500).send("Error al obtener usuario");
 
-    res.render('layouts/layout', {
-        titulo: 'Inicio',
-        body: pagina
+        const pagina = await ejs.renderFile("views/pages/index.ejs", { 
+            usuarios
+        });
+
+        res.render('layouts/layout', {
+            titulo: 'Inicio',
+            body: pagina
+        });
     });
 }
 
@@ -73,22 +75,23 @@ controller.contactoEnviado = (req, res) => {
     });
 }
 
-controller.verPerfil = async (req, res) => {
+controller.verPerfil = (req, res) => {
     // Obtener un parámetro desde la URL
     const id = req.params.id;
-    const usuario = User.obtenerUsuarioPorId(id);
-    // console.log(usuario);
+    User.obtenerUsuarioPorId(id, async (err, usuario) => {
+        if (err) return res.status(500).send("Error al buscar usuario");
+        if (!usuario) {
+            return res.status(404).redirect('/error');
+        }
 
-    if (!usuario)
-        return res.redirect('/error');
+        const pagina = await ejs.renderFile("views/pages/perfil.ejs", { 
+            usuario
+        });
 
-    const pagina = await ejs.renderFile("views/pages/perfil.ejs", { 
-        usuario
-    });
-
-    res.render('layouts/layout', { 
-        'titulo': 'Perfil de ' + usuario.nombre,
-        body: pagina
+        res.render('layouts/layout', { 
+            'titulo': 'Perfil de ' + usuario.nombre,
+            body: pagina
+        });
     });
 }
 
@@ -100,38 +103,31 @@ controller.error_404 = (req, res) => {
     });
 }
 
-controller.editarUsuario = async (req, res) => {
+controller.editarUsuario = (req, res) => {
     const id = req.params.id;
-    const usuario = User.obtenerUsuarioPorId(id);
+    User.obtenerUsuarioPorId(id, async (err, usuario) => {
+        if (err) return res.redirect('/error');
+        if (!usuario) return res.redirect('/error');
 
-    if (!usuario)
-        return res.redirect('/error');
+        const pagina = await ejs.renderFile("views/pages/editar.ejs", { 
+            usuario
+        });
 
-    const pagina = await ejs.renderFile("views/pages/editar.ejs", { 
-        usuario
-    });
-
-    res.render('layouts/layout', { 
-        'titulo': 'Editar ' + usuario.nombre,
-        body: pagina
+        res.render('layouts/layout', { 
+            'titulo': 'Editar ' + usuario.nombre,
+            body: pagina
+        });
     });
 }
 
 controller.actualizarUsuario = (req, res) => {
     const id = req.params.id;
     const { name, email } = req.body;
-    const usuario = User.obtenerUsuarioPorId(id);
-    if (!usuario) return res.status(404).send("Usuario no encontrado");
 
-    const foto = req.file ? `/images/${req.file.filename}` : usuario.foto;
-
-    User.actualizarUsuario(id, {
-        "nombre": name,
-        "email": email,
-        foto
+    User.actualizarUsuario(id, { "nombre": name, "correo": email }, (err) => {
+        if (err) return res.status(404).send("Usuario no encontrado");
+        res.redirect(`/usuarios/${id}?updated=true`);
     });
-
-    res.redirect(`/usuarios/${id}?updated=true`);
 }
 
 controller.eliminarUsuario = (req, res) => {

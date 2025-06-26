@@ -1,64 +1,71 @@
 const fs = require('fs');
 const path = require('path');
 const route = path.join(__dirname, '../database/users.json');
+const db = require('../config/db');
 
-function obtenerUsuarios() {
-    const usuarios = fs.readFileSync(route, 'utf8');
-    return JSON.parse(usuarios);
-}
+const User = {
+    obtenerUsuarios: (callback) => {
+        db.query('SELECT * FROM usuarios', (err, results) => {
+            if (err) return callback(err);
+            const usuarios = results.map(user => ({
+                ...user
+            }));
+            // console.log(usuarios);
+            
+            callback(null, usuarios);
+        })
+        /*const usuarios = fs.readFileSync(route, 'utf8');
+        return JSON.parse(usuarios);*/
+    },
 
-function obtenerUsuarioPorId(id) {
-    // La lista completa de los usuarios
-    const usuarios = obtenerUsuarios();
-    return usuarios.find(u => u.id === parseInt(id));
-}
+    obtenerUsuarioPorId: (id, callback) => {
+        db.query('SELECT * FROM usuarios WHERE id = ?', [id], (err, results) => {
+            if (err) return callback(err);
 
-function eliminarUsuario(id) {
-    const usuarios = obtenerUsuarios();
-    const usuario = usuarios.find(u => u.id === parseInt(id));
-    if (!usuario) return false;
+            if (results.length === 0) return callback(null, null);
 
-    if (usuario.foto && usuario.foto.startsWith('/images/')) {
-        // Obtener la ruta de la foto
-        const fotoPath = path.join(__dirname, '../public', usuario.foto);
-        if (fs.existsSync(fotoPath)) {
-            fs.unlinkSync(fotoPath);
+            const user = results[0];
+            callback(null, user);
+        });
+    },
+
+    eliminarUsuario: (id) => {
+        const usuarios = obtenerUsuarios();
+        const usuario = usuarios.find(u => u.id === parseInt(id));
+        if (!usuario) return false;
+
+        if (usuario.foto && usuario.foto.startsWith('/images/')) {
+            // Obtener la ruta de la foto
+            const fotoPath = path.join(__dirname, '../public', usuario.foto);
+            if (fs.existsSync(fotoPath)) {
+                fs.unlinkSync(fotoPath);
+            }
         }
-    }
 
-    // Obteniendo los usuarios menos el que pasamos por ID en el parámetro
-    const nuevosUsuarios = usuarios.filter(u => u.id !== parseInt(id));
-    fs.writeFileSync(route, JSON.stringify(nuevosUsuarios, null, 2));
-    return true;
-}
+        // Obteniendo los usuarios menos el que pasamos por ID en el parámetro
+        const nuevosUsuarios = usuarios.filter(u => u.id !== parseInt(id));
+        fs.writeFileSync(route, JSON.stringify(nuevosUsuarios, null, 2));
+        return true;
+    },
 
-function crearUsuario(datos) {
-    const usuarios = obtenerUsuarios();
-    const nuevoId = usuarios.length + 1;
-    const nuevoUsuario = { id: nuevoId, ...datos };
-    usuarios.push(nuevoUsuario);
-    fs.writeFileSync(route, JSON.stringify(usuarios, null, 2));
-    return nuevoId;
-}
-
-function actualizarUsuario(id, nuevosDatos) {
-    const usuarios = obtenerUsuarios();
-
-    // Obtenemos al indice del usuario que estamos buscando
-    const index = usuarios.findIndex(u => u.id === parseInt(id));
-
-    if (index === -1) {
-        return res.status(404).send("Usario no encontrado");
-    } else {
-        usuarios[index] = { ...usuarios[index], ...nuevosDatos };
+    crearUsuario: (datos) => {
+        const usuarios = obtenerUsuarios();
+        const nuevoId = usuarios.length + 1;
+        const nuevoUsuario = { id: nuevoId, ...datos };
+        usuarios.push(nuevoUsuario);
         fs.writeFileSync(route, JSON.stringify(usuarios, null, 2));
+        return nuevoId;
+    },
+
+    actualizarUsuario: (id, nuevosDatos, callback) => {
+        db.query('UPDATE usuarios SET nombre = ?, correo = ? WHERE id = ?', 
+            [nuevosDatos.nombre, nuevosDatos.correo, id],
+            (err) => {
+                if (err) return callback(err);
+                callback(null);
+            }
+        );
     }
 }
 
-module.exports = {
-    obtenerUsuarios,
-    obtenerUsuarioPorId,
-    eliminarUsuario,
-    crearUsuario,
-    actualizarUsuario
-};
+module.exports = User;
