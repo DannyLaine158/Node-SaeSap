@@ -10,6 +10,7 @@ controller.mostrarInicio = (req, res) => {
     User.obtenerUsuarios(async (err, usuarios) => {
         if (err) return res.status(500).send("Error al obtener usuario");
 
+        // console.log(usuarios);
         const pagina = await ejs.renderFile("views/pages/index.ejs", { 
             usuarios
         });
@@ -124,7 +125,13 @@ controller.actualizarUsuario = (req, res) => {
     const id = req.params.id;
     const { name, email } = req.body;
 
-    User.actualizarUsuario(id, { "nombre": name, "correo": email }, (err) => {
+    const base64 = req.file 
+        ? `data:${req.file.mimetype};base64,${fs.readFileSync(req.file.path, { encoding: 'base64' })}` 
+        : null;
+
+    User.actualizarUsuario(id, 
+        { "nombre": name, "correo": email }, base64,
+        (err) => {
         if (err) return res.status(404).send("Usuario no encontrado");
         res.redirect(`/usuarios/${id}?updated=true`);
     });
@@ -153,8 +160,12 @@ controller.crearUsuario = (req, res) => {
     if (!nombre || !correo)
         return res.status(400).send("Faltan campos obligatorios");
 
+    const base64 = req.file 
+        ? `data:${req.file.mimetype};base64,${fs.readFileSync(req.file.path, { encoding: 'base64' })}` 
+        : null;
+
     // const foto = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
-    User.crearUsuario({ nombre, correo }, (err, nuevoId) => {
+    User.crearUsuario({ nombre, correo }, base64, (err, nuevoId) => {
         if (err) return res.status(500).send("Error al crear usuario");
 
         res.redirect(`/usuarios/${nuevoId}`);
