@@ -32,7 +32,7 @@ const User = {
             const user = results[0];
             const fotos = User._leerFotos();
             user.foto = fotos[user.id] || null;
-            console.log(user);
+            // console.log(user);
             callback(null, user);
         });
     },
