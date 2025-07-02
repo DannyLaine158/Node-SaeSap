@@ -3,7 +3,7 @@ const express = require('express');
 // Inicializamos a Express
 const app = express();
 // Buscamos puerto disponible
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const path = require('path');
 
 // Configuración para cargar las variables de entorno
