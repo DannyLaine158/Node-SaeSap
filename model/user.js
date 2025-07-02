@@ -7,7 +7,7 @@ const rutaFotos = path.join(__dirname, '../database/fotos.json');
 
 const User = {
     obtenerUsuarios: (callback) => {
-        db.query('SELECT * FROM usuarios', (err, results) => {
+        db.query('SELECT * FROM usuarios2', (err, results) => {
             if (err) return callback(err);
 
             const fotos = User._leerFotos();
@@ -24,7 +24,7 @@ const User = {
     },
 
     obtenerUsuarioPorId: (id, callback) => {
-        db.query('SELECT * FROM usuarios WHERE id = ?', [id], (err, results) => {
+        db.query('SELECT * FROM usuarios2 WHERE id = ?', [id], (err, results) => {
             if (err) return callback(err);
 
             if (results.length === 0) return callback(null, null);
@@ -38,7 +38,7 @@ const User = {
     },
 
     eliminarUsuario: (id, callback) => {
-        db.query("DELETE FROM usuarios WHERE id = ?", [id], (err) => {
+        db.query("DELETE FROM usuarios2 WHERE id = ?", [id], (err) => {
             if (err) return callback(err);
             User._eliminarFoto(id);
             callback(null);
@@ -46,7 +46,7 @@ const User = {
     },
 
     crearUsuario: (datos, base64, callback) => {
-        db.query("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)",
+        db.query("INSERT INTO usuarios2 (nombre, correo) VALUES (?, ?)",
             [ datos.nombre, datos.correo ],
             (err, result) => {
                 if (err) return callback(err);
@@ -57,7 +57,7 @@ const User = {
     },
 
     actualizarUsuario: (id, nuevosDatos, base64, callback) => {
-        db.query('UPDATE usuarios SET nombre = ?, correo = ? WHERE id = ?', 
+        db.query('UPDATE usuarios2 SET nombre = ?, correo = ? WHERE id = ?', 
             [nuevosDatos.nombre, nuevosDatos.correo, id],
             (err) => {
                 if (err) return callback(err);

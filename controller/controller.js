@@ -166,7 +166,7 @@ controller.crearUsuario = (req, res) => {
 
     // const foto = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
     User.crearUsuario({ nombre, correo }, base64, (err, nuevoId) => {
-        if (err) return res.status(500).send("Error al crear usuario");
+        if (err) return res.status(500).send("Error al crear usuario " + err);
 
         res.redirect(`/usuarios/${nuevoId}`);
     })
